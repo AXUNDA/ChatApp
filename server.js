@@ -14,9 +14,15 @@ io.on("connection",(socket)=>{
       socket.on("join-room",({username,room})=>{
             const user = userJoin(socket.id, username,room)
             console.log(user)
+            // create a socket connection for the room
             socket.join(user.room)
+            // send a message back to the emitting connection
             socket.emit("message",formatMessage(botName,`hello ${user.username} welcome to the chat room`));
+
+            // send a message to everyone in the current connection except the emitting socket
       socket.broadcast.to(user.room).emit("message",formatMessage(botName,`${user.username} has joined the chat`));
+
+            // send to everyone in the room
       io.to(user.room).emit("users",{
             room: user.room,
             users:getRoomUsers(user.room)
